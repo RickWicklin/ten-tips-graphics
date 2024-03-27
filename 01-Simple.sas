@@ -56,8 +56,11 @@ run;
 */
 data DebateDiff;
 set Debate2012;
-label Difference = "Percentage Difference: Romney - Obama";
-Difference = Romney - Obama;
+label Difference = "Percentage Difference: Romney - Obama"
+      DifferenceOR = "Percentage Difference: Obama - Romney";
+DifferenceRO = Romney - Obama;
+DifferenceOR = -DifferenceRO;
+Difference   = DifferenceRO;
 if Difference>0 then Advantage = "Romney";
 else                 Advantage = "Obama ";
 run;
@@ -65,14 +68,32 @@ run;
 proc sort data=DebateDiff;  /* sort categories by difference */
    by Difference;
 run;
- 
+
+/* show the raw categories again, but sorted */ 
+data DiffLong;        /* transpose the data from wide to long */
+set DebateDiff;
+Candidate = "Obama "; Value = Obama;  output;
+Candidate = "Romney"; Value = Romney; output;
+drop Obama Romney;
+run;
+
+title "2012 US Presidential Debates";
+title2 "Linguistic Style Indexed Across Three Debates";
+footnote justify=left "Data from http://blog.odintext.com/?p=179";
+proc sgplot data=DiffLong;
+   hbar Category / response=Value group=Candidate groupdisplay=stack;
+   refline 50 / axis=x lineattrs=(color=black);
+   yaxis discreteorder=data;
+   xaxis label="Percentage" values=(0 to 100 by 10);
+run;
+
 title2 "Linguistic Style Differences Indexed Across Three Debates";
 proc sgplot data=DebateDiff;
-   hbar Category / response=Difference group=Advantage;
+   hbar Category / response=DifferenceOR group=Advantage;
    refline 0 / axis=x;
    yaxis discreteorder=data;
    xaxis grid;
-   keylegend / position=topright location=inside title="Candidate" across=1; 
+   keylegend / position=bottomright location=inside title="Candidate" across=1; 
 run;
 
 
