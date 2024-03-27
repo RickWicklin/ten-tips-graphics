@@ -126,7 +126,7 @@ proc sgpanel data=LE;
    series x=Year y=Expected / group=Country_Name break transparency=0.5
        grouplc=region lineattrs=(pattern=solid)
        tip=(Country_Name Region);
-   colaxis grid display=(nolabel) offsetmin=0.05 fitpolicy=stagger;
+   colaxis grid display=(nolabel) offsetmin=0.05 fitpolicy=rotate;
    keylegend / type=linecolor title="";
 run;
 
